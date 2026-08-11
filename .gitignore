@@ -1,0 +1,19 @@
+#Software
+.vscode
+build
+
+# Hardware
+
+## Kicad Temp Files
+*.000
+*.bak
+*.bck
+_autosave-*
+
+*.net
+*.dsn
+*.ses
+*.xml
+*.csv
+**/*-backups
+*.kicad_prl
