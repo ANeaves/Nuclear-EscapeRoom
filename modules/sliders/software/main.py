@@ -44,14 +44,20 @@ class Puzzle:
             screen.text(f"Screen {index}...", 8, 20)
             screen.show()
 
+
+
+        background = ImageBuffer("images/background.bmp")
+        img_a = ImageBuffer("images/A.bmp")
+        img_b = ImageBuffer("images/B.bmp")
+
         self.screens[0].fill(0)
-        self.screens[0].blit(hello_world_img, 0, 0)
+        self.screens[0].blit(background.framebuf, 0, 0)
+        self.screens[0].blit(img_a.framebuf, 32, 0)
         self.screens[0].show()
 
-        img = ImageBuffer("images/A.bmp")
-
         self.screens[1].fill(0)
-        self.screens[1].blit(img.framebuf, 0, 0)
+        self.screens[1].blit(background.framebuf, 0, 0)
+        self.screens[1].blit(img_b.framebuf, 32, 0)
         self.screens[1].show()
 
     def generate_solution(self):
