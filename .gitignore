@@ -10,6 +10,11 @@ build
 *.bck
 _autosave-*
 
+## Kicad Manufactoring Files
+*.gbr
+*.gbrjob
+*.drl
+
 *.net
 *.dsn
 *.ses
@@ -17,3 +22,5 @@ _autosave-*
 *.csv
 **/*-backups
 *.kicad_prl
+
+*.zip
