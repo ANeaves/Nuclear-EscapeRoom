@@ -1,11 +1,10 @@
-import sys
 import struct
-from framebuf import FrameBuffer, MONO_HLSB
+from adafruit_framebuf import FrameBuffer, MVLSB
 
 class ImageBuffer:
 
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str):
         with open(filename, "rb") as f:
             contents = bytearray(f.read())
 
@@ -20,4 +19,4 @@ class ImageBuffer:
             raise ValueError("Only Works for 1 Bit bmps")
 
         self.data = contents[offset:fileSize]
-        self.framebuf = FrameBuffer(self.data, self.width, self.height, MONO_HLSB)
+        self.framebuf = FrameBuffer(self.data, self.width, self.height, MVLSB)
