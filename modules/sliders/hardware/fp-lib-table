@@ -1,0 +1,6 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "CustomFootprints") (type "KiCad") (uri "D:/Documents/GitHub/Nuclear-EscapeRoom/CustomFootprints.pretty") (options "") (descr ""))
+	(lib (name "KiCad") (type "KiCad") (uri "D:/Downloads/LIB_PTA6043-2015DPB103/PTA6043-2015DPB103/KiCad.pretty") (options "") (descr ""))
+	(lib (name "KiCad") (type "KiCad") (uri "D:/Downloads/LIB_PTA6043-2015DPB103/PTA6043-2015DPB103/KiCad.pretty") (options "") (descr ""))
+)

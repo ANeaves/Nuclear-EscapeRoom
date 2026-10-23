@@ -3,7 +3,7 @@ from adafruit_tca9548a import TCA9548A
 from adafruit_ssd1306 import SSD1306_I2C
 from images.images import ImageBuffer
 import asyncio
-from analogio import AnalogIn#
+from analogio import AnalogIn
 from busio import I2C
 
 from itertools import combinations
