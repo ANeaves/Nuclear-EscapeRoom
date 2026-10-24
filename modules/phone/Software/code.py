@@ -71,11 +71,11 @@ class PhonePuzzle(Puzzle):
     def check_solution(self) -> bool:
         # Read the input from the dials
         print("Checking Phone Solution")
-        values: list[int] = []
+        values: list[int] = [0] * len(self.count_selectors)
         for index, selector in enumerate(self.count_selectors):
             selector.value = True
             count_vals = [count.value for count in self.counters]
-            true_pins = [i for i, x in enumerate(count_vals)]
+            true_pins = [i for i, x in enumerate(count_vals) if x]
             selector.value = False # reset pin down to avoid breaking next selector read
             if not true_pins:
                 # No pin read high, means a value of 0
