@@ -4,7 +4,7 @@ import asyncio
 from digitalio import DigitalInOut, Direction, Pull
 
 from puzzle import Puzzle
-from PhoneHandler import PhoneHandler, PHONE_STATE
+import PhoneHandler
 from rgb1602 import Screen
 from busio import I2C
 
@@ -36,7 +36,7 @@ class PhonePuzzle(Puzzle):
         super().__init__("phone", (led_green, led_red), submit)
 
         # Setup Phone state machine
-        self.phone = PhoneHandler(enable, pulse, handset, audio)
+        self.phone = PhoneHandler.PhoneHandler(enable, pulse, handset, audio)
 
         # Setup Screen I2C
         i2c = I2C(screen_scl, screen_sda)
@@ -90,7 +90,7 @@ class PhonePuzzle(Puzzle):
         input_val = int(''.join(map(str, values)))
         return input_val == self.solution_code
 
-    def update_screen(self, old_state: PHONE_STATE = "idle", state: PHONE_STATE = "idle", old_num: str = "", num: str = ""):
+    def update_screen(self, old_state: PhoneHandler.PHONE_STATE = "idle", state: PhoneHandler.PHONE_STATE = "idle", old_num: str = "", num: str = ""):
 
         if state == "dialing" and old_num != num:
             if len(num):
@@ -125,10 +125,10 @@ class PhonePuzzle(Puzzle):
     
     async def monitor_phone(self):
         while True:
-            old_state: PHONE_STATE = getattr(self.phone.state, "name", "idle")
+            old_state: PhoneHandler.PHONE_STATE = getattr(self.phone.state, "name", "idle")
             old_number = self.phone.dialed_number
             self.phone.update()
-            state: PHONE_STATE = getattr(self.phone.state, "name", "idle")
+            state: PhoneHandler.PHONE_STATE = getattr(self.phone.state, "name", "idle")
             self.update_screen(old_state, state, old_number, self.phone.dialed_number)
 
             await asyncio.sleep(0)

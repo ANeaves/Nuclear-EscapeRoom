@@ -8,15 +8,20 @@ try:
     from microcontroller import Pin
     PHONE_STATE = typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]
 except ImportError:
-    PHONE_STATE = str
-
-
+    # PHONE_STATE = str
+    pass
 
 dial = "dial_tone.mp3"
 invalid = "number_unavailable.mp3"
 ringing = "ringing.mp3"
 poacher = "poacher.mp3"
 sam = "sam.mp3"
+
+class NumberResponse:
+
+    def __init__(self, audio: "list[str]", code: int = 0 ) -> None:
+        self.audio = audio
+        self.code = code
 
 class PhoneHandler(StateMachine):
     """State Machine class to handle the various functions of the Phone, such as dialing and playing audio"""
@@ -31,8 +36,8 @@ class PhoneHandler(StateMachine):
         self.keys = keypad.Keys((enable, pulse, handset), value_when_pressed=False)
 
         self.number_dict = {
-            "01282": [ringing, poacher],
-            "01154": [ringing, sam]
+            "01282": NumberResponse([ringing, poacher], 39715),
+            "01154": NumberResponse([ringing, sam], 50890)
         }
 
         self.add_state(IdleState())
@@ -43,7 +48,7 @@ class PhoneHandler(StateMachine):
 
         self.go_to_state("idle")
 
-    def go_to_state(self, state_name: PHONE_STATE):
+    def go_to_state(self, state_name: typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]):
         return super().go_to_state(state_name)
 
 
@@ -53,7 +58,7 @@ class IdleState(State):
         super().__init__()
 
     @property
-    def name(self) -> PHONE_STATE:
+    def name(self):
         return 'idle'
 
     def enter(self, machine: PhoneHandler) -> State:
@@ -78,7 +83,7 @@ class DialingState(State):
         self.dial_val = 0
 
     @property
-    def name(self) -> PHONE_STATE:
+    def name(self):
         return 'dialing'
 
     def enter(self, machine: PhoneHandler) -> State:
@@ -119,11 +124,13 @@ class ConnectedState(State):
         self.files: list[str] = []
 
     @property
-    def name(self) -> PHONE_STATE:
+    def name(self):
         return 'connected'
 
     def enter(self, machine: PhoneHandler):
-        self.files = machine.number_dict.get(machine.dialed_number, [invalid])
+        dialed = machine.number_dict.get(machine.dialed_number, None)
+
+        self.files = dialed.audio if dialed else [invalid]
         return super().enter(machine)
 
     def exit(self, machine: PhoneHandler):
@@ -149,7 +156,7 @@ class DisconnectedState(State):
         super().__init__()
 
     @property
-    def name(self) -> PHONE_STATE:
+    def name(self):
         return 'disconnected'
 
     def enter(self, machine: PhoneHandler):
@@ -171,7 +178,7 @@ class InvalidState(State):
         super().__init__()
 
     @property
-    def name(self) -> PHONE_STATE:
+    def name(self):
         return 'invalid'
 
     def enter(self, machine: PhoneHandler):
