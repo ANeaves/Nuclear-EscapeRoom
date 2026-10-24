@@ -6,10 +6,11 @@ from StateMachine import StateMachine, State
 try:
     import typing
     from microcontroller import Pin
+    PHONE_STATE = typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]
 except ImportError:
-    pass
+    PHONE_STATE = str
 
-PHONE_STATE = typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]
+
 
 dial = "dial_tone.mp3"
 invalid = "number_unavailable.mp3"

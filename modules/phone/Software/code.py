@@ -59,6 +59,37 @@ class PhonePuzzle(Puzzle):
         # Setup Async update loops
         self.async_tasks.append(asyncio.create_task(self.monitor_phone()))
 
+    def run(self):
+        print("Starting Phone Main Run Loop")
+        return super().run()
+
+    def gen_solution(self):
+        # TODO: Generate real solution
+        self.display_code = "FBA319-T"
+        self.solution_code = 0
+
+    def check_solution(self) -> bool:
+        # Read the input from the dials
+        print("Checking Phone Solution")
+        values: list[int] = []
+        for index, selector in enumerate(self.count_selectors):
+            selector.value = True
+            count_vals = [count.value for count in self.counters]
+            true_pins = [i for i, x in enumerate(count_vals)]
+            selector.value = False # reset pin down to avoid breaking next selector read
+            if not true_pins:
+                # No pin read high, means a value of 0
+                values[index] = 0
+            elif len(true_pins) > 1:
+                print(f"Read {len(true_pins)} connected dial values, which is invalid")
+                return False
+            else:
+                values[index] = true_pins[0] if true_pins else 0
+
+        print(f"Read Dial Values: {values}")
+        input_val = int(''.join(map(str, values)))
+        return input_val == self.solution_code
+
     def update_screen(self, old_state: PHONE_STATE = "idle", state: PHONE_STATE = "idle", old_num: str = "", num: str = ""):
 
         if state == "dialing" and old_num != num:
@@ -91,33 +122,6 @@ class PhonePuzzle(Puzzle):
                 self.screen.set_css_color("orange")
                 self.screen.update("Invalid Number")
                 return
-
-    def gen_solution(self):
-        # TODO: Generate real solution
-        self.display_code = "FBA319-T"
-        self.solution_code = 0
-
-    def check_solution(self) -> bool:
-        # Read the input from the dials
-        print("Checking Phone Solution")
-        values: list[int] = []
-        for index, selector in enumerate(self.count_selectors):
-            selector.value = True
-            count_vals = [count.value for count in self.counters]
-            true_pins = [i for i, x in enumerate(count_vals)]
-            selector.value = False # reset pin down to avoid breaking next selector read
-            if not true_pins:
-                # No pin read high, means a value of 0
-                values[index] = 0
-            elif len(true_pins) > 1:
-                print(f"Read {len(true_pins)} connected dial values, which is invalid")
-                return False
-            else:
-                values[index] = true_pins[0] if true_pins else 0
-
-        print(f"Read Dial Values: {values}")
-        input_val = int(''.join(map(str, values)))
-        return input_val == self.solution_code
     
     async def monitor_phone(self):
         while True:
@@ -131,5 +135,6 @@ class PhonePuzzle(Puzzle):
 
 
 puzzle = PhonePuzzle()
+puzzle.gen_solution()
 puzzle.run()
 

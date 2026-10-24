@@ -2,20 +2,21 @@
 import board
 import asyncio
 import keypad
-from digitalio import DigitalInOut, Direction, Pull
+from digitalio import DigitalInOut, Direction
 try:
-    import typing
+    from typing import Literal, Tuple
     from microcontroller import Pin
+    PUZ_STATE = Literal["INIT", "RUN", "WON", "LOSS", "RESET"]
+    LED_COLOUR = Literal["OFF", "RED", "GREEN"]
 except ImportError:
-    pass
+    PUZ_STATE = str
+    LED_COLOUR = str
 
-PUZ_STATE = typing.Literal["INIT", "RUN", "WON", "LOSS", "RESET"]
-LED_COLOUR = typing.Literal["OFF", "RED", "GREEN"]
 
 class Puzzle:
     """Base Puzzle class, each puzzle module should extend this class"""
 
-    def __init__(self, name: str, led_pins: typing.Tuple[Pin, Pin] = (board.GP0, board.GP1), submit_button_pin = board.GP2):
+    def __init__(self, name: str, led_pins: Tuple[Pin, Pin] = (board.GP0, board.GP1), submit_button_pin = board.GP2):
         """Initialise the puzzle"""
         self.name = name
         self.puz_state: PUZ_STATE = "INIT"
@@ -45,6 +46,7 @@ class Puzzle:
         ]
 
     def run(self):
+        self.set_state("RUN")
         asyncio.run(self.main())
 
     async def main(self):
