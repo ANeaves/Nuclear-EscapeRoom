@@ -2,20 +2,16 @@ import audiomp3
 import audiopwmio
 import keypad
 from StateMachine import StateMachine, State
+from Phonebook import Phonebook, dial, invalid
 
 try:
     import typing
     from microcontroller import Pin
-    PHONE_STATE = typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]
+    PHONE_STATE = typing.Literal["init", "idle", "dialing", "connected", "disconnected", "invalid"]
 except ImportError:
     # PHONE_STATE = str
     pass
 
-dial = "dial_tone.mp3"
-invalid = "number_unavailable.mp3"
-ringing = "ringing.mp3"
-poacher = "poacher.mp3"
-sam = "sam.mp3"
 
 class NumberResponse:
 
@@ -35,22 +31,29 @@ class PhoneHandler(StateMachine):
         self.decoder = audiomp3.MP3Decoder(dial) # pyright: ignore[reportCallIssue]
         self.keys = keypad.Keys((enable, pulse, handset), value_when_pressed=False)
 
-        self.number_dict = {
-            "01282": NumberResponse([ringing, poacher], 39715),
-            "01154": NumberResponse([ringing, sam], 50890)
-        }
+        self.number_dict = Phonebook
 
+        self.add_state(InitState())
         self.add_state(IdleState())
         self.add_state(DialingState())
         self.add_state(ConnectedState())
         self.add_state(DisconnectedState())
         self.add_state(InvalidState())
 
-        self.go_to_state("idle")
+        self.go_to_state("init")
 
-    def go_to_state(self, state_name: typing.Literal["idle", "dialing", "connected", "disconnected", "invalid"]):
+    def go_to_state(self, state_name: typing.Literal["init", "idle", "dialing", "connected", "disconnected", "invalid"]):
         return super().go_to_state(state_name)
 
+
+class InitState(State):
+
+    @property
+    def name(self):
+        return "init"
+
+    def update(self, machine: PhoneHandler):
+        return machine.go_to_state("idle")
 
 class IdleState(State):
 

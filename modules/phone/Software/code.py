@@ -10,9 +10,9 @@ from busio import I2C
 
 
 # Puzzle Pins
-led_green = board.GP1
+led_green = board.GP3
 led_red = board.GP2
-submit = board.GP3
+submit = board.GP1
 
 # Phone Pins
 enable = board.GP13
@@ -51,10 +51,11 @@ class PhonePuzzle(Puzzle):
         self.counters = [DigitalInOut(count_pin) for count_pin in counter if count_pin]
         for count in self.counters:
             count.direction = Direction.INPUT
-            count.pull = Pull.DOWN
+            count.pull = Pull.UP
         self.count_selectors = [DigitalInOut(select_pin) for select_pin in select]
         for selector in self.count_selectors:
             selector.direction = Direction.OUTPUT
+            selector.value = True
 
         # Setup Async update loops
         self.async_tasks.append(asyncio.create_task(self.monitor_phone()))
@@ -66,29 +67,32 @@ class PhonePuzzle(Puzzle):
     def gen_solution(self):
         # TODO: Generate real solution
         self.display_code = "FBA319-T"
-        self.solution_code = 0
+        self.solution_code = 12345        
 
     def check_solution(self) -> bool:
         # Read the input from the dials
         print("Checking Phone Solution")
-        values: list[int] = [0] * len(self.count_selectors)
+        read = 0
         for index, selector in enumerate(self.count_selectors):
-            selector.value = True
-            count_vals = [count.value for count in self.counters]
+            self.count_selectors[0].value = True
+            self.count_selectors[1].value = True
+            self.count_selectors[2].value = True
+            self.count_selectors[3].value = True
+            self.count_selectors[4].value = True
+            
+            selector.value = False
+            count_vals = [not count.value for count in self.counters]
+
             true_pins = [i for i, x in enumerate(count_vals) if x]
-            selector.value = False # reset pin down to avoid breaking next selector read
-            if not true_pins:
-                # No pin read high, means a value of 0
-                values[index] = 0
-            elif len(true_pins) > 1:
+            print(f"{index}: {true_pins}")
+            if len(true_pins) > 1:
                 print(f"Read {len(true_pins)} connected dial values, which is invalid")
                 return False
             else:
-                values[index] = true_pins[0] if true_pins else 0
+                read += (true_pins[0] if true_pins else 0) * pow(10, index)
 
-        print(f"Read Dial Values: {values}")
-        input_val = int(''.join(map(str, values)))
-        return input_val == self.solution_code
+        print(f"Input: {read}, expected: {self.solution_code}")
+        return read == self.solution_code
 
     def update_screen(self, old_state: PhoneHandler.PHONE_STATE = "idle", state: PhoneHandler.PHONE_STATE = "idle", old_num: str = "", num: str = ""):
 
