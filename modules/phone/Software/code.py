@@ -2,8 +2,10 @@
 import board
 import asyncio
 from digitalio import DigitalInOut, Direction, Pull
+import random
 
 from puzzle import Puzzle
+from Phonebook import Phonebook
 import PhoneHandler
 from rgb1602 import Screen
 from busio import I2C
@@ -65,9 +67,12 @@ class PhonePuzzle(Puzzle):
         return super().run()
 
     def gen_solution(self):
-        # TODO: Generate real solution
-        self.display_code = "FBA319-T"
-        self.solution_code = 12345        
+        print("Generating Solution")
+
+        select_number = random.choice(list(Phonebook.values()))
+        self.solution_code = select_number.code
+        self.display_code = random.choice(select_number.network)
+
 
     def check_solution(self) -> bool:
         # Read the input from the dials
