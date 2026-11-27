@@ -68,9 +68,10 @@ class PhonePuzzle(Puzzle):
 
     def gen_solution(self):
         print("Generating Solution")
-
-        select_number = random.choice(list(Phonebook.values()))
-        self.solution_code = select_number.code
+        self.solution_code = 0
+        while self.solution_code == 0:
+            select_number = random.choice(list(Phonebook.values()))
+            self.solution_code = select_number.code
         self.display_code = random.choice(select_number.network)
 
 
